@@ -12,6 +12,8 @@ public class PlayerCam : MonoBehaviour
     float yRotate;
     float xRotate;
 
+    bool mouseActive = true;
+
     private void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
@@ -24,8 +26,13 @@ public class PlayerCam : MonoBehaviour
         float xMouse = Input.GetAxisRaw("Mouse X") * Time.deltaTime * xSens;
         float yMouse = Input.GetAxisRaw("Mouse Y") * Time.deltaTime * ySens;
 
-        yRotate += xMouse;
-        xRotate -= yMouse; 
+        //Debug Function for Deactivating mouse movement when not needed.
+        if(Input.GetKeyDown(KeyCode.L)) mouseActive = !mouseActive;
+        if (mouseActive)
+        {
+            yRotate += xMouse;
+            xRotate -= yMouse;
+        }
 
         // Make it so you can't look up/down > 90 degrees
         xRotate = Mathf.Clamp(xRotate, -90f, 90f);

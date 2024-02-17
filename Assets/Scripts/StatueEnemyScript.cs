@@ -9,6 +9,8 @@ public class StatueEnemyScript : MonoBehaviour
     public float viewRadius;
     public float moveSpeed;
     public float attackRadius;
+    public LayerMask sightLayerMask;
+    public float statueRadius;
 
     //public NavMeshObstacle frustrumObstacle;
     
@@ -71,10 +73,10 @@ public class StatueEnemyScript : MonoBehaviour
     }
     void SetSneakTargetPosition()
     {
-        Vector3 toPlayerDirection = (player.position - transform.position);
+        Vector3 toPlayerDirection = (player.position - transform.position).normalized;
 
         //1 if same direction, -1 if opposite, 0 if perpendicular
-        float DotProd = Vector3.Dot(-toPlayerDirection.normalized, player.forward.normalized);
+        float DotProd = Vector3.Dot(-toPlayerDirection, player.forward.normalized);
 
         float playerStatueDistance = Vector3.Distance(player.position, transform.position);
         float distanceFromPlayer = playerStatueDistance * DotProd;
@@ -92,13 +94,31 @@ public class StatueEnemyScript : MonoBehaviour
     bool IsPlayerLooking() => GeometryUtility.TestPlanesAABB(GeometryUtility.CalculateFrustumPlanes(playerCamera), renderer.bounds);
     bool IsSightBlocked()
     {
+        float midDistance = Vector3.Distance(transform.position, player.position);
+        Vector3 midDirection = (transform.position - player.position).normalized;
         RaycastHit hit;
-        Physics.Raycast(
-            transform.position, 
-            (player.position - transform.position).normalized, 
-            out hit, 
-            Vector3.Distance(player.position, transform.position));
-        return hit.transform != player;
+        Physics.Raycast(player.position, midDirection, out hit, midDistance, sightLayerMask);
+
+        bool midHit = (hit.transform == transform);
+
+        float angle = Mathf.Rad2Deg*Mathf.Atan(statueRadius/midDistance);
+
+        Vector3 leftDirection = Quaternion.AngleAxis(-angle, Vector3.up) * midDirection;
+        Vector3 rightDirection = Quaternion.AngleAxis(angle, Vector3.up) * midDirection; ;
+
+        float sideDistance = Mathf.Sqrt(Mathf.Pow(midDistance, 2) + Mathf.Pow(statueRadius, 2));
+
+        Physics.Raycast(player.position, leftDirection, out hit, sideDistance, sightLayerMask);
+        bool leftHit = (hit.transform == transform);
+        Physics.Raycast(player.position, rightDirection, out hit, sideDistance, sightLayerMask);
+        bool rightHit = (hit.transform == transform);
+
+        Debug.DrawRay(player.position, midDirection * midDistance, midHit? Color.white:Color.red);
+        Debug.DrawRay(player.position, leftDirection * sideDistance, leftHit ? Color.white:Color.red);
+        Debug.DrawRay(player.position, rightDirection * sideDistance, rightHit ? Color.white:Color.red);
+        
+
+        return !(midHit || rightHit || leftHit);
     }
 
 
