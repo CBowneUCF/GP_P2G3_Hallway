@@ -5,7 +5,7 @@ using UnityEngine;
 public class KeycardItemScript : InteractableScript
 {
     public float speed;
-    public PlayerScript player;
+    public Transform player;
 
     new Transform transform;
     Vector3 deSpawnLocation;
@@ -13,7 +13,7 @@ public class KeycardItemScript : InteractableScript
     private void Start()
     {
         transform = GetComponent<Transform>();
-        deSpawnLocation = player.transform.position;
+        deSpawnLocation = player.position;
     }
 
     private void Update()
@@ -23,6 +23,6 @@ public class KeycardItemScript : InteractableScript
 
     public override void Interact()
     {
-        player.transform.position = deSpawnLocation;
+        player.position = deSpawnLocation;
     }
 }

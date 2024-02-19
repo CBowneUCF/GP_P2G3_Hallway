@@ -5,7 +5,7 @@ using UnityEngine;
 public class PrototypeAreaScript : MonoBehaviour
 {
     public GameObject Enemy;
-    public Vector3 enemyInitPos;
+    Vector3 enemyInitPos;
 
     private void Start()
     {
