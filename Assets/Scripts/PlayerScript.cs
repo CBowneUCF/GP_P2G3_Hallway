@@ -9,6 +9,7 @@ public class PlayerScript : MonoBehaviour
     //Parameters
     //public float moveAccel;
     public float moveTopSpeed;
+    private float sprintSpeed = 16;
     public float groundDrag;
     public float playerHeight;
     public LayerMask Ground;
@@ -59,6 +60,8 @@ public class PlayerScript : MonoBehaviour
         //onGround = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f, Ground);
         //if (onGround) rb.drag = groundDrag;
         //else rb.drag = 0;
+
+        Sprint();
 
         OtherControls();
 
@@ -113,6 +116,20 @@ public class PlayerScript : MonoBehaviour
         {
             Vector3 cappedVel = baseVel.normalized * moveTopSpeed;
             rb.velocity = new Vector3(cappedVel.x, rb.velocity.y, cappedVel.z);
+        }
+    }
+
+    private void Sprint()
+    {   
+        // This is a temporary sprint function, will have to be updated because it can present issues
+
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            moveTopSpeed = sprintSpeed;
+        }
+        else
+        {
+            moveTopSpeed = 7;
         }
     }
 
