@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 
 public class PlayerScript : MonoBehaviour
 {
@@ -17,10 +18,8 @@ public class PlayerScript : MonoBehaviour
     public LayerMask Ground;
     public Vector2 mouseSensitivity;
 
-
     //References
     public new Camera camera;
-
 
     //Data Stache
     [HideInInspector] public new Transform transform;
@@ -127,8 +126,7 @@ public class PlayerScript : MonoBehaviour
 
     private void Sprint()
     {   
-        // When the left shift key is pressed, update the speed.
-        if (Input.GetKey(KeyCode.LeftShift))
+        if (sprintHeld == true)
         {
             currentSpeed = sprintSpeed;
         }
