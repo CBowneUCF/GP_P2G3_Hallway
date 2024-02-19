@@ -217,7 +217,7 @@ MonoBehaviour:
     m_Bits: 65
   interactableMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 128
   mouseSensitivity: {x: 70, y: 70}
   interactSize: {x: 1, y: 1, z: 1.5}
   camera: {fileID: 3880216267474725892}

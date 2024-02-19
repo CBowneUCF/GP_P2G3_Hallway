@@ -124,7 +124,7 @@ public class PlayerScript : MonoBehaviour
     void InteractAction()
     {
         Collider[] results = Physics.OverlapBox(camTransform.position + (camTransform.forward * (interactSize.z/2)), interactSize/2, camTransform.rotation, interactableMask);
-        results[0].GetComponent<InteractableScript>().Interact();
+        if(results.Length > 0) results[0].GetComponent<InteractableScript>()?.Interact();
     }
 
 
