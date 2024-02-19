@@ -11,8 +11,10 @@ public class PlayerScript : MonoBehaviour
     public float moveTopSpeed;
     public float groundDrag;
     public float playerHeight;
-    public LayerMask Ground;
+    public LayerMask groundMask;
+    public LayerMask interactableMask;
     public Vector2 mouseSensitivity;
+    public Vector3 interactSize;
 
 
     //References
@@ -65,6 +67,8 @@ public class PlayerScript : MonoBehaviour
         inputDirection = input.Main.Movement.ReadValue<Vector2>();
 
         LookControls();
+
+        if (interactPressed) InteractAction();
     }
     private void FixedUpdate()
     {
@@ -117,6 +121,13 @@ public class PlayerScript : MonoBehaviour
     }
 
 
+    void InteractAction()
+    {
+        Collider[] results = Physics.OverlapBox(camTransform.position + (camTransform.forward * (interactSize.z/2)), interactSize/2, camTransform.rotation, interactableMask);
+        results[0].GetComponent<InteractableScript>().Interact();
+    }
+
+
     void OtherControls()
     {
         //This is for later once we establish additional functionality.
@@ -125,6 +136,7 @@ public class PlayerScript : MonoBehaviour
         blinkPressed = input.Main.Blink.WasPressedThisFrame();
         sprintHeld = input.Main.Sprint.IsPressed();
         pausePressed = input.Main.Pause.WasPressedThisFrame();
+        interactPressed = input.Main.Interact.WasPressedThisFrame();
 
     }
 
@@ -133,5 +145,6 @@ public class PlayerScript : MonoBehaviour
     bool jumpPressed;
     bool blinkPressed;
     bool pausePressed;
+    bool interactPressed;
 
 }
