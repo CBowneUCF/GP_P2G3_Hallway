@@ -1,14 +1,18 @@
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 
 public class PlayerScript : MonoBehaviour
 {
 
     //Parameters
     //public float moveAccel;
-    public float moveTopSpeed;
+    private float currentSpeed;
+    private float walkTopSpeed;
+    private float sprintSpeed;
     public float groundDrag;
     public float playerHeight;
     public LayerMask groundMask;
@@ -16,10 +20,8 @@ public class PlayerScript : MonoBehaviour
     public Vector2 mouseSensitivity;
     public Vector3 interactSize;
 
-
     //References
     public new Camera camera;
-
 
     //Data Stache
     [HideInInspector] public new Transform transform;
@@ -54,6 +56,10 @@ public class PlayerScript : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
+        // Set speed amounts for sprint and walk
+        walkTopSpeed = 7;
+        sprintSpeed = 14;
+
     }
 
     void Update()
@@ -61,6 +67,8 @@ public class PlayerScript : MonoBehaviour
         //onGround = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f, Ground);
         //if (onGround) rb.drag = groundDrag;
         //else rb.drag = 0;
+
+        Sprint();
 
         OtherControls();
 
@@ -79,7 +87,7 @@ public class PlayerScript : MonoBehaviour
         //rb.velocity += rotatedDirection * moveAccel; //My First Solution
         //if (rb.velocity.magnitude >= moveTopSpeed) rb.velocity = rb.velocity.normalized * moveTopSpeed;
 
-        rb.velocity = rotatedDirection * moveTopSpeed; //My Second Solution (Little to no Easing.)
+        rb.velocity = rotatedDirection * currentSpeed; //My Second Solution (Little to no Easing.)
     }
 
     void LookControls()
@@ -113,10 +121,22 @@ public class PlayerScript : MonoBehaviour
         Vector3 baseVel = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
 
         // Cap the velocity
-        if (baseVel.magnitude > moveTopSpeed)
+        if (baseVel.magnitude > currentSpeed)
         {
-            Vector3 cappedVel = baseVel.normalized * moveTopSpeed;
+            Vector3 cappedVel = baseVel.normalized * currentSpeed;
             rb.velocity = new Vector3(cappedVel.x, rb.velocity.y, cappedVel.z);
+        }
+    }
+
+    private void Sprint()
+    {   
+        if (sprintHeld == true)
+        {
+            currentSpeed = sprintSpeed;
+        }
+        else
+        {
+            currentSpeed = walkTopSpeed;
         }
     }
 
