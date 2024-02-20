@@ -6,7 +6,7 @@ using UnityEngine.AI;
 public class StatueEnemyScript : MonoBehaviour
 {
     //Parameters
-    public float viewRadius;
+    //public float viewRadius;
     public float moveSpeed;
     public float attackRadius;
     public LayerMask sightLayerMask;

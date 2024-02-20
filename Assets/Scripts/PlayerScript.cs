@@ -11,9 +11,9 @@ public class PlayerScript : MonoBehaviour
     //Parameters
     //public float moveAccel;
     private float currentSpeed;
-    private float walkTopSpeed;
-    private float sprintSpeed;
-    public float groundDrag;
+    public float walkTopSpeed = 7;
+    public float sprintTopSpeed = 14;
+    //public float groundDrag;
     public float playerHeight;
     public LayerMask groundMask;
     public LayerMask interactableMask;
@@ -57,8 +57,8 @@ public class PlayerScript : MonoBehaviour
         Cursor.visible = false;
 
         // Set speed amounts for sprint and walk
-        walkTopSpeed = 7;
-        sprintSpeed = 14;
+        //walkTopSpeed = 7;
+        //sprintTopSpeed = 14;
 
     }
 
@@ -68,9 +68,9 @@ public class PlayerScript : MonoBehaviour
         //if (onGround) rb.drag = groundDrag;
         //else rb.drag = 0;
 
-        Sprint();
-
         OtherControls();
+
+        Sprint();
 
         inputDirection = input.Main.Movement.ReadValue<Vector2>();
 
@@ -132,7 +132,7 @@ public class PlayerScript : MonoBehaviour
     {   
         if (sprintHeld == true)
         {
-            currentSpeed = sprintSpeed;
+            currentSpeed = sprintTopSpeed;
         }
         else
         {
