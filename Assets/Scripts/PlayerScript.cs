@@ -156,7 +156,7 @@ public class PlayerScript : MonoBehaviour
                     regeneratingStamina = null;
                 }
 
-                currentSpeed = sprintSpeed;
+                currentSpeed = sprintTopSpeed;
                 playerStamina -= staminaDrain * Time.deltaTime;
             }    
 
