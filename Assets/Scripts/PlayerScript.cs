@@ -88,6 +88,8 @@ public class PlayerScript : MonoBehaviour
         LookControls();
 
         if (interactPressed) InteractAction();
+
+        if (Input.GetKeyDown(KeyCode.Escape)) Application.Quit();
     }
     private void FixedUpdate()
     {
