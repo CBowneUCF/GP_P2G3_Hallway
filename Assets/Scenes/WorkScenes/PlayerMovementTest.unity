@@ -259,13 +259,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9045110be466e948870d9a4c0f14680, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveTopSpeed: 7
+  currentSpeed: 0
   groundDrag: 5
   playerHeight: 2
   Ground:
     serializedVersion: 2
     m_Bits: 65
   mouseSensitivity: {x: 70, y: 70}
+  playerStamina: 0
+  maxStamina: 100
+  staminaDrain: 25
   camera: {fileID: 1993114615}
   transform: {fileID: 0}
   rb: {fileID: 0}
