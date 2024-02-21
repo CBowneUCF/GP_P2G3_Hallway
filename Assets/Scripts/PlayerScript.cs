@@ -10,13 +10,23 @@ public class PlayerScript : MonoBehaviour
 
     //Parameters
     //public float moveAccel;
-    private float currentSpeed;
+    public float currentSpeed;
     private float walkTopSpeed;
     private float sprintSpeed;
     public float groundDrag;
     public float playerHeight;
     public LayerMask Ground;
     public Vector2 mouseSensitivity;
+
+    [Header("Stamina Parameters")]
+    public float playerStamina; 
+    public float maxStamina = 100f; 
+    public float staminaDrain;
+    bool canSprint;
+    private float timeBeforeRegen  = 3;
+    private float staminaIncrement = 2;
+    private float staminaTimeIncrement = 0.1f;
+    private Coroutine regeneratingStamina;
 
     //References
     public new Camera camera;
@@ -56,8 +66,9 @@ public class PlayerScript : MonoBehaviour
 
         // Set speed amounts for sprint and walk
         walkTopSpeed = 7;
-        sprintSpeed = 14;
+        sprintSpeed = 12;
 
+        playerStamina = maxStamina;
     }
 
     void Update()
@@ -126,14 +137,62 @@ public class PlayerScript : MonoBehaviour
 
     private void Sprint()
     {   
-        if (sprintHeld == true)
+        if(playerStamina > 0)
+            canSprint = true;
+
+        if (sprintHeld && canSprint)
         {
-            currentSpeed = sprintSpeed;
+            if (sprintHeld)
+            {   
+                if (regeneratingStamina != null)
+                {
+                    StopCoroutine(regeneratingStamina);
+                    regeneratingStamina = null;
+                }
+
+                currentSpeed = sprintSpeed;
+                playerStamina -= staminaDrain * Time.deltaTime;
+            }    
+
+            if(!canSprint)
+            {
+                currentSpeed = walkTopSpeed;
+            }
+
+            if (playerStamina < 0)
+                playerStamina = 0;
         }
-        else
+        else { currentSpeed = walkTopSpeed; }
+
+        if (playerStamina == 0)
+            canSprint = false; 
+
+        if (!sprintHeld && playerStamina < maxStamina && regeneratingStamina == null)
         {
-            currentSpeed = walkTopSpeed;
+            regeneratingStamina = StartCoroutine(RegenStamina());
         }
+    }
+
+    private IEnumerator RegenStamina()
+    {
+        yield return new WaitForSeconds(timeBeforeRegen);
+        WaitForSeconds timeToWait = new WaitForSeconds(staminaTimeIncrement);
+
+
+        while(playerStamina < maxStamina)
+        {
+            if (playerStamina > 0)
+                canSprint = true;
+
+            playerStamina += staminaIncrement;
+
+            if (playerStamina > maxStamina)
+                playerStamina = maxStamina;
+
+            yield return timeToWait;
+        }
+
+        regeneratingStamina = null;
     }
 
 
