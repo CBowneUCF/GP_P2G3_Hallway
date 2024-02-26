@@ -149,7 +149,7 @@ GameObject:
   - component: {fileID: 7418495471514728868}
   - component: {fileID: 2950687740439844144}
   - component: {fileID: 4353663616456251875}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -209,8 +209,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9045110be466e948870d9a4c0f14680, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveTopSpeed: 7
-  groundDrag: 5
+  walkTopSpeed: 7
+  sprintTopSpeed: 14
   playerHeight: 2
   groundMask:
     serializedVersion: 2
@@ -220,6 +220,9 @@ MonoBehaviour:
     m_Bits: 128
   mouseSensitivity: {x: 70, y: 70}
   interactSize: {x: 1, y: 1, z: 1.5}
+  playerStamina: 0
+  maxStamina: 100
+  staminaDrain: 0
   camera: {fileID: 3880216267474725892}
   transform: {fileID: 0}
   rb: {fileID: 0}
