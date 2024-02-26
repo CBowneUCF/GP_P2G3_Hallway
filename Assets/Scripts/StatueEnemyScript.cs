@@ -67,6 +67,8 @@ public class StatueEnemyScript : MonoBehaviour
         Debug.DrawRay(transform.position, (player.position-transform.position).normalized * killRadius, Color.red);
         if (canMove && (Vector3.Distance(transform.position, player.position) <= killRadius)) Debug.Log("SNAP");
 
+
+
     }
 
     void DetermineMovementCapability()
@@ -183,11 +185,13 @@ public class StatueEnemyScript : MonoBehaviour
         if (!(withinCam.z > 0 && withinCam.x < 1 && withinCam.x > 0 && withinCam.y < 1 && withinCam.y > 0)) return false;
 
         RaycastHit hit;
-        Physics.Linecast(start, player.transform.position, out hit, sightLayerMask);
+        Physics.Linecast(start, player.transform.position, out hit, sightLayerMask, QueryTriggerInteraction.Ignore);
         bool result = hit.transform == player.transform;
 
         Debug.DrawLine(start, player.transform.position, result ? Color.white : Color.red);
+        Debug.DrawRay(hit.point, hit.normal, Color.yellow);
         return result;
+
     }
 
 
