@@ -13,8 +13,10 @@ public class StatueEnemyScript : MonoBehaviour
     public float moveSpeed;
     public float attackRadius;
     public LayerMask sightLayerMask;
+    public LayerMask interactionLayerMask;
     public float sightPadding;
-    public float killRadius;
+    public float interactionReach;
+    public float doorOpenTime;
     
     //Components
     NavMeshAgent agent;
@@ -24,16 +26,21 @@ public class StatueEnemyScript : MonoBehaviour
 
     public Transform player;
     public Camera playerCamera;
-    public Transform sneakUpTarget;
     public BoxCollider renderBounds;
 
-
     //Other Data
+    public enum EnemyState { Moving, Visible, Halted, Paused }
+    public EnemyState enemyState;
+    bool canMove => enemyState == EnemyState.Moving;
+
+    float doorTimeLeft = 0;
+    DoorScript openingDoor;
+
     //bool playerLookingInDirection;
-    bool canMove;
     //Ray rayToPlayer;
-    private LayerMask sightLayerMask_Old;
-    private float statueRadius_Old;
+    LayerMask sightLayerMask_Old;
+    float statueRadius_Old;
+    Transform sneakUpTarget_Old;
     //Plane[] viewPlanes;
     //[SerializeField] float dDistance;
 
@@ -48,9 +55,8 @@ public class StatueEnemyScript : MonoBehaviour
 
     void Update()
     {
-        //viewPlanes = GeometryUtility.CalculateFrustumPlanes(playerCamera);
 
-        DetermineMovementCapability();
+        if((int)enemyState < 2) DetermineMovementCapability();
 
         //SetSneakTargetPosition();
         
@@ -63,30 +69,40 @@ public class StatueEnemyScript : MonoBehaviour
              */
         }
 
-        //dDistance = Vector3.Distance(transform.position, player.position);
-        Debug.DrawRay(transform.position, (player.position-transform.position).normalized * killRadius, Color.red);
-        if (canMove && (Vector3.Distance(transform.position, player.position) <= killRadius)) Debug.Log("SNAP");
+        if(canMove) ForwardInteraction();
 
-
+        if (doorTimeLeft > 0)
+        {
+            doorTimeLeft -= Time.deltaTime;
+            if(doorTimeLeft <= 0.4)
+            {
+                openingDoor?.Interact();
+                openingDoor = null;
+            }
+            if(doorTimeLeft <= 0)
+            {
+                ChangeMovementCapability(EnemyState.Moving);
+            }
+        }
 
     }
 
     void DetermineMovementCapability()
     {
-        if (!IsPlayerLooking()) ChangeMovementCapability(true);
+        if (!IsPlayerLooking()) ChangeMovementCapability(EnemyState.Moving);
         else
         {
-            if (IsSightBlockedV3()) ChangeMovementCapability(true);
-            else ChangeMovementCapability(false);
+            if (IsSightBlockedV3()) ChangeMovementCapability(EnemyState.Moving);
+            else ChangeMovementCapability(EnemyState.Visible);
         }
         
 
     }
-    void ChangeMovementCapability(bool value)
+    void ChangeMovementCapability(EnemyState value)
     {
-        canMove = value;
-        agent.isStopped = !value;
-        if (!value)
+        enemyState = value;
+        agent.isStopped = value != EnemyState.Moving;
+        if (value != EnemyState.Moving)
         {
             agent.velocity = Vector3.zero;
             agent.destination = agent.nextPosition;
@@ -105,7 +121,7 @@ public class StatueEnemyScript : MonoBehaviour
         Vector3 direction = -player.right * Mathf.Sign(Vector3.Dot(player.right, toPlayerDirection));
         //Vector3 backPadding = -player.forward * Mathf.Abs(Vector3.Dot(player.right, toPlayerDirection));
 
-        sneakUpTarget.position = player.position + direction * distanceFromPlayer;
+        sneakUpTarget_Old.position = player.position + direction * distanceFromPlayer;
 
         //Debug.DrawRay(player.position, -toPlayerDirection);
     }
@@ -189,12 +205,33 @@ public class StatueEnemyScript : MonoBehaviour
         bool result = hit.transform == player.transform;
 
         Debug.DrawLine(start, player.transform.position, result ? Color.white : Color.red);
-        Debug.DrawRay(hit.point, hit.normal, Color.yellow);
         return result;
 
     }
 
+    void ForwardInteraction()
+    {
+        RaycastHit result;
+        if (!Physics.Raycast(transform.position, transform.forward, out result, interactionReach, interactionLayerMask, QueryTriggerInteraction.Collide)) return;
+        if (result.transform == player.transform) KillPlayer();
+        else
+        {
+            openingDoor = result.transform.GetComponent<DoorScript>();
+            if (openingDoor && openingDoor.isClosed) BeginDoorOpening();
+        }
+    }
 
+    void KillPlayer()
+    {
+        ChangeMovementCapability(EnemyState.Halted);
+        Debug.Log("SNAP");
+    }
 
+    void BeginDoorOpening()
+    {
+        ChangeMovementCapability(EnemyState.Halted);
+        doorTimeLeft = doorOpenTime + 0.4f;
+
+    }
 
 }

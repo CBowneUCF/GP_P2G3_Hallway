@@ -5,8 +5,8 @@ using UnityEngine.AI;
 
 public class DoorScript : InteractableScript
 {
-    new Collider collider;
-    NavMeshObstacle obstacle;
+    //new Collider collider;
+    //NavMeshObstacle obstacle;
     Animator animator;
 
     public bool isClosed = true;
@@ -19,10 +19,10 @@ public class DoorScript : InteractableScript
 
     private void Start()
     {
-        collider = GetComponent<Collider>();
-        obstacle = GetComponent<NavMeshObstacle>();
-        collider.isTrigger = !isClosed;
-        obstacle.enabled = isClosed;
+        //collider = GetComponent<Collider>();
+        //obstacle = GetComponent<NavMeshObstacle>();
+        //collider.isTrigger = !isClosed;
+        //obstacle.enabled = isClosed;
         animator = GetComponent<Animator>();
         animator.Play(isClosed ? anim_Closed : anim_Open );
     }
@@ -40,8 +40,8 @@ public class DoorScript : InteractableScript
 
     public void ToggleCollision()
     {
-        collider.isTrigger = !isClosed;
-        obstacle.enabled = isClosed;
+        //collider.isTrigger = !isClosed;
+        //obstacle.enabled = isClosed;
     }
     public void EndAnimation() => isAnimating = false;
 }

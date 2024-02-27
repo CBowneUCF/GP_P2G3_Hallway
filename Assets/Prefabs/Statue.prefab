@@ -89,7 +89,7 @@ NavMeshAgent:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9201348874347918613}
   m_Enabled: 1
-  m_AgentTypeID: 0
+  m_AgentTypeID: -1372625422
   m_Radius: 0.5
   m_Speed: 10
   m_Acceleration: 350
@@ -129,7 +129,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 4874855f5eb2bb74f8fdc9122e742a02,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -0.215
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4874855f5eb2bb74f8fdc9122e742a02,
         type: 3}
