@@ -27,8 +27,12 @@ namespace Vector3Helper
         public static implicit operator Vector3(Position value) => value.value;
         public static implicit operator Position(Vector3 value) => new Position(value);
 
-        public static bool operator ==(Position primary, Position other) => primary.value == other.value;
-        public static bool operator !=(Position primary, Position other) => primary.value != other.value;
+        public static bool operator ==(Position left, Position right) => left.value == right.value;
+        public static bool operator !=(Position left, Position right) => left.value != right.value;
+        public static bool operator ==(Position left, Vector3 right) => left.value == right;
+        public static bool operator !=(Position left, Vector3 right) => left.value != right;
+        public static bool operator ==(Vector3 left, Position right) => left == right.value;
+        public static bool operator !=(Vector3 left, Position right) => left != right.value;
 
         public static Position operator +(Position primary, Position value) => new Position(primary.value + value.value);
         public static Position operator -(Position primary, Position value) => new Position(primary.value - value.value);

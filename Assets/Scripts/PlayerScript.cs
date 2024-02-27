@@ -9,11 +9,9 @@ public class PlayerScript : MonoBehaviour
 {
 
     //Parameters
-    //public float moveAccel;
     private float currentSpeed;
     public float walkTopSpeed = 7;
     public float sprintTopSpeed = 14;
-    //public float groundDrag;
     public float playerHeight;
     public LayerMask groundMask;
     public LayerMask interactableMask;
@@ -39,11 +37,12 @@ public class PlayerScript : MonoBehaviour
     [HideInInspector] public new Collider collider;
     [HideInInspector] public Transform camTransform;
     private InputControls input;
+    GameStateManagerScript stateManager;
     bool onGround;
     Vector2 inputDirection;
     Vector2 viewRotation;
     Vector2 viewInput;
-    bool mouseActive = true;
+    //bool mouseActive = true;
 
 
 
@@ -62,6 +61,7 @@ public class PlayerScript : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         collider= GetComponent<Collider>();
         camTransform = camera.transform;
+        stateManager = GameStateManagerScript.instance;
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
@@ -89,7 +89,8 @@ public class PlayerScript : MonoBehaviour
 
         if (interactPressed) InteractAction();
 
-        if (Input.GetKeyDown(KeyCode.Escape)) Application.Quit();
+        if(pausePressed) stateManager.TogglePause();
+        //if (Input.GetKeyDown(KeyCode.Escape)) Application.Quit();
     }
     private void FixedUpdate()
     {
@@ -106,21 +107,13 @@ public class PlayerScript : MonoBehaviour
     void LookControls()
     {
         viewInput = input.Main.Looking.ReadValue<Vector2>();
-        Vector2 viewInputAdj = viewInput * Time.deltaTime * mouseSensitivity;
+        Vector2 viewInputAdj = viewInput * mouseSensitivity * Time.deltaTime * (Screen.width/100f);
 
         //Debug Function for Deactivating mouse movement when not needed.
-        if (Input.GetKeyDown(KeyCode.L))
-        {
-            mouseActive = !mouseActive;
-            Cursor.visible = !mouseActive;
-            Cursor.lockState = mouseActive ? CursorLockMode.Locked : CursorLockMode.None;
-        }
 
-        if (mouseActive)
-        {
-            viewRotation.x += viewInputAdj.x;
-            viewRotation.y -= viewInputAdj.y;
-        }
+        viewRotation.x += viewInputAdj.x;
+        viewRotation.y -= viewInputAdj.y;
+        
 
         // Make it so you can't look up/down > 90 degrees
         viewRotation.y = Mathf.Clamp(viewRotation.y, -90f, 90f);
@@ -227,5 +220,11 @@ public class PlayerScript : MonoBehaviour
     bool blinkPressed;
     bool pausePressed;
     bool interactPressed;
+
+
+    public void SetPause(bool value)
+    {
+
+    }
 
 }

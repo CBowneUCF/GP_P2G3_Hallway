@@ -218,7 +218,7 @@ MonoBehaviour:
   interactableMask:
     serializedVersion: 2
     m_Bits: 128
-  mouseSensitivity: {x: 70, y: 70}
+  mouseSensitivity: {x: 5, y: 5}
   interactSize: {x: 1, y: 1, z: 1.5}
   playerStamina: 0
   maxStamina: 100

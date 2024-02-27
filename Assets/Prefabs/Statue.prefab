@@ -33,7 +33,7 @@ Transform:
   m_Children:
   - {fileID: 7588687735648642517}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!136 &2657381044294039134
 CapsuleCollider:
@@ -74,13 +74,17 @@ MonoBehaviour:
   attackRadius: 3
   sightLayerMask:
     serializedVersion: 2
-    m_Bits: 73
+    m_Bits: 321
+  interactionLayerMask:
+    serializedVersion: 2
+    m_Bits: 217
   sightPadding: 0.1
-  killRadius: 1.1
+  interactionReach: 0.7
+  doorOpenTime: 5
   player: {fileID: 0}
   playerCamera: {fileID: 0}
-  sneakUpTarget: {fileID: 0}
   renderBounds: {fileID: 5744468378738790494}
+  enemyState: 0
 --- !u!195 &1930627551412785556
 NavMeshAgent:
   m_ObjectHideFlags: 0
