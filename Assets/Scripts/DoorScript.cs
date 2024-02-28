@@ -17,6 +17,9 @@ public class DoorScript : InteractableScript
     public string anim_Closing = "Closing";
     public string anim_Opening = "Opening";
 
+    public bool requiresKeycard;
+    PlayerScript player;
+
     private void Start()
     {
         //collider = GetComponent<Collider>();
@@ -25,11 +28,14 @@ public class DoorScript : InteractableScript
         //obstacle.enabled = isClosed;
         animator = GetComponent<Animator>();
         animator.Play(isClosed ? anim_Closed : anim_Open );
+        if (requiresKeycard) player = GameStateManagerScript.instance.player;
     }
 
 
     public override void Interact()
     {
+        if (requiresKeycard) if (!player.hasKeycard) return;
+
         if (isAnimating) return;
 
         animator.Play(isClosed ? anim_Opening : anim_Closing);

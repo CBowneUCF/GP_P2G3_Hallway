@@ -29,13 +29,12 @@ public class PlayerScript : MonoBehaviour
     private Coroutine regeneratingStamina;
 
     //References
-    public new Camera camera;
+    public new Transform camera;
 
     //Data Stache
     [HideInInspector] public new Transform transform;
     [HideInInspector] public Rigidbody rb;
     [HideInInspector] public new Collider collider;
-    [HideInInspector] public Transform camTransform;
     private InputControls input;
     GameStateManagerScript stateManager;
     bool onGround;
@@ -44,8 +43,7 @@ public class PlayerScript : MonoBehaviour
     Vector2 viewInput;
     //bool mouseActive = true;
 
-
-
+    [HideInInspector] public bool hasKeycard;
 
 
 
@@ -60,8 +58,8 @@ public class PlayerScript : MonoBehaviour
         transform = base.transform;
         rb = GetComponent<Rigidbody>();
         collider= GetComponent<Collider>();
-        camTransform = camera.transform;
         stateManager = GameStateManagerScript.instance;
+        animator = GetComponent<Animator>();
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
@@ -102,6 +100,8 @@ public class PlayerScript : MonoBehaviour
         //if (rb.velocity.magnitude >= moveTopSpeed) rb.velocity = rb.velocity.normalized * moveTopSpeed;
 
         rb.velocity = rotatedDirection * currentSpeed; //My Second Solution (Little to no Easing.)
+
+        animator.SetFloat("WalkSpeed", new Vector3(rb.velocity.x, 0, rb.velocity.z).magnitude);
     }
 
     void LookControls()
@@ -119,7 +119,7 @@ public class PlayerScript : MonoBehaviour
         viewRotation.y = Mathf.Clamp(viewRotation.y, -90f, 90f);
 
         transform.eulerAngles = Vector3.up * viewRotation.x;
-        camTransform.eulerAngles = transform.eulerAngles + Vector3.right * viewRotation.y;
+        camera.eulerAngles = transform.eulerAngles + Vector3.right * viewRotation.y;
     }
 
     private void CapSpeed()
@@ -197,7 +197,7 @@ public class PlayerScript : MonoBehaviour
 
     void InteractAction()
     {
-        Collider[] results = Physics.OverlapBox(camTransform.position + (camTransform.forward * (interactSize.z/2)), interactSize/2, camTransform.rotation, interactableMask);
+        Collider[] results = Physics.OverlapBox(camera.position + (camera.forward * (interactSize.z/2)), interactSize/2, camera.rotation, interactableMask);
         if(results.Length > 0) results[0].GetComponent<InteractableScript>()?.Interact();
     }
 
@@ -225,6 +225,18 @@ public class PlayerScript : MonoBehaviour
     public void SetPause(bool value)
     {
 
+    }
+
+    Animator animator;
+
+    public void BeginDeath()
+    {
+        animator.Play("Death");
+        enabled = false;
+    }
+    public void EndDeath()
+    {
+        Debug.Log("Jump to Death Ending Screen");
     }
 
 }
