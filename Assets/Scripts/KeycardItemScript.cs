@@ -9,6 +9,8 @@ public class KeycardItemScript : InteractableScript
 
     new Transform transform;
     Vector3 deSpawnLocation;
+
+    //SceneSwap changeScene;
     
     private void Start()
     {
@@ -24,5 +26,6 @@ public class KeycardItemScript : InteractableScript
     public override void Interact()
     {
         player.position = deSpawnLocation;
+        //changeScene.WinScreen();
     }
 }
