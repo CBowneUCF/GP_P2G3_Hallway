@@ -9,7 +9,7 @@ public class PlayerScript : MonoBehaviour
 {
 
     //Parameters
-    private float currentSpeed;
+    [SerializeField] private float currentSpeed;
     public float walkTopSpeed = 7;
     public float sprintTopSpeed = 14;
     public float playerHeight;
@@ -23,6 +23,7 @@ public class PlayerScript : MonoBehaviour
     public float maxStamina = 100f; 
     public float staminaDrain;
     bool canSprint;
+    bool isMoving;
     private float timeBeforeRegen  = 3;
     private float staminaIncrement = 2;
     private float staminaTimeIncrement = 0.1f;
@@ -63,10 +64,6 @@ public class PlayerScript : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-
-        // Set speed amounts for sprint and walk
-        //walkTopSpeed = 7;
-        //sprintTopSpeed = 14;
 
         playerStamina = maxStamina;
     }
@@ -139,8 +136,20 @@ public class PlayerScript : MonoBehaviour
 
     private void Sprint()
     {   
+        // Check if the player is moving
+        if (inputDirection.x != 0 || inputDirection.y != 0)
+        {
+            isMoving = true;
+        }
+        else
+        {
+            isMoving = false;
+        }
+
+
         if(playerStamina > 0)
             canSprint = true;
+        
         
         if (sprintHeld && canSprint)
         {
@@ -153,18 +162,18 @@ public class PlayerScript : MonoBehaviour
                 }
 
                 currentSpeed = sprintTopSpeed;
-                playerStamina -= staminaDrain * Time.deltaTime;
-            }    
 
-            if(!canSprint)
-            {
-                currentSpeed = walkTopSpeed;
-            }
+                if (isMoving)
+                {
+                    playerStamina -= staminaDrain * Time.deltaTime; 
+                }
+            }    
 
             if (playerStamina < 0)
                 playerStamina = 0;
         }
         else { currentSpeed = walkTopSpeed; }
+        
 
         if (playerStamina == 0)
             canSprint = false; 
