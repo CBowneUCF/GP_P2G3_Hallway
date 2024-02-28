@@ -74,7 +74,7 @@ public class StatueEnemyScript : MonoBehaviour
             doorTimeLeft -= Time.deltaTime;
             if(doorTimeLeft <= 0.4)
             {
-                openingDoor?.Interact();
+                openingDoor?.Interact(this);
                 openingDoor = null;
             }
             if(doorTimeLeft <= 0)

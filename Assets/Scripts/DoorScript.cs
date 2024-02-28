@@ -32,9 +32,9 @@ public class DoorScript : InteractableScript
     }
 
 
-    public override void Interact()
+    public override void Interact(MonoBehaviour interactor = null)
     {
-        if (requiresKeycard) if (!player.hasKeycard) return;
+        if (requiresKeycard) if (!player.hasKeycard || interactor.GetType() == typeof(StatueEnemyScript)) return;
 
         if (isAnimating) return;
 

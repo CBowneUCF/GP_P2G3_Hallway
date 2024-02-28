@@ -45,7 +45,7 @@ public class PlayerScript : MonoBehaviour
 
     [HideInInspector] public bool hasKeycard;
 
-
+    [HideInInspector] public bool canMove = true;
 
 
 
@@ -81,9 +81,12 @@ public class PlayerScript : MonoBehaviour
 
         Sprint();
 
-        inputDirection = input.Main.Movement.ReadValue<Vector2>();
+        if (canMove)
+        {
+            inputDirection = input.Main.Movement.ReadValue<Vector2>();
 
-        LookControls();
+            LookControls();
+        }
 
         if (interactPressed) InteractAction();
 
@@ -198,7 +201,12 @@ public class PlayerScript : MonoBehaviour
     void InteractAction()
     {
         Collider[] results = Physics.OverlapBox(camera.position + (camera.forward * (interactSize.z/2)), interactSize/2, camera.rotation, interactableMask);
-        if(results.Length > 0) results[0].GetComponent<InteractableScript>()?.Interact();
+        if(results.Length > 0)
+        {
+            Debug.Log("Interacted with Something.");
+            results[0].GetComponent<InteractableScript>()?.Interact(this);
+            if (results[0].GetComponent<PageItemScript>()) canMove = !canMove;
+        }
     }
 
 

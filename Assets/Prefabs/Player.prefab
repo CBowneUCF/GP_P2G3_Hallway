@@ -200,6 +200,7 @@ MonoBehaviour:
   rb: {fileID: 0}
   collider: {fileID: 0}
   hasKeycard: 0
+  canMove: 1
 --- !u!54 &4353663616456251875
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -499,7 +500,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.3
+  near clip plane: 0.18
   far clip plane: 1000
   field of view: 60
   orthographic: 0

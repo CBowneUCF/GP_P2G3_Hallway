@@ -12,7 +12,7 @@ public class KeycardItemScript : InteractableScript
 
     private void Update() => transform.eulerAngles += Vector3.up * spinSpeed;
 
-    public override void Interact()
+    public override void Interact(MonoBehaviour interactor = null)
     {
         player.hasKeycard = true;
         Destroy(gameObject);
