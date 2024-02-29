@@ -25,6 +25,8 @@ public class StatueEnemyScript : MonoBehaviour
     private new Renderer renderer;
     Transform rendererTransform;
     Transform camTransform;
+    new AudioSource audio;
+    float audioVolume;
 
     Transform player;
     Camera camCamera;
@@ -50,6 +52,8 @@ public class StatueEnemyScript : MonoBehaviour
         player = stateManager.player.GetComponent<Transform>();
         camTransform = stateManager.player.camera;
         camCamera = camTransform.GetComponentInChildren<Camera>();
+        audio = GetComponent<AudioSource>();
+        audioVolume = audio.volume;
     }
 
 
@@ -105,6 +109,7 @@ public class StatueEnemyScript : MonoBehaviour
             agent.velocity = Vector3.zero;
             agent.destination = agent.nextPosition;
         }
+        audio.volume = value == EnemyState.Moving ? audioVolume : 0;
     }
 
 
