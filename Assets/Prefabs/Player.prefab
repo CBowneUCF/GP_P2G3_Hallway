@@ -181,6 +181,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9045110be466e948870d9a4c0f14680, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentSpeed: 0
   walkTopSpeed: 7
   sprintTopSpeed: 14
   playerHeight: 2
@@ -194,7 +195,7 @@ MonoBehaviour:
   interactSize: {x: 1, y: 1, z: 1.5}
   playerStamina: 0
   maxStamina: 100
-  staminaDrain: 0
+  staminaDrain: 30
   camera: {fileID: 8426160403107293032}
   transform: {fileID: 0}
   rb: {fileID: 0}
