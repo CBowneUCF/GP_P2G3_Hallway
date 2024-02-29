@@ -7,12 +7,12 @@ public class MainMenu : MonoBehaviour
 {
     public void PlayButton()
     {
-        SceneManager.LoadScene("Game Scene");
+        SceneManager.LoadScene(SceneSwap.GameplayScene);
     }
 
     public void BackToMain()
     {
-        SceneManager.LoadScene("Main Menu");
+        SceneManager.LoadScene(SceneSwap.MainMenuScene);
     }
 
     public void CreditScene()

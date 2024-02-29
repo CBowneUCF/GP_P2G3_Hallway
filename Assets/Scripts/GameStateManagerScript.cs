@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameStateManagerScript : Singleton<GameStateManagerScript>
 {
@@ -41,6 +42,11 @@ public class GameStateManagerScript : Singleton<GameStateManagerScript>
         Cursor.visible = isPaused;
         Cursor.lockState = isPaused ? CursorLockMode.None : CursorLockMode.Locked;
 
+    }
+
+    public void QuitToMenu()
+    {
+        SceneManager.LoadScene(SceneSwap.MainMenuScene);
     }
 
 }

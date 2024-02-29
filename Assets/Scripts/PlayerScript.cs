@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class PlayerScript : MonoBehaviour
 {
@@ -248,12 +249,14 @@ public class PlayerScript : MonoBehaviour
 
     public void BeginDeath()
     {
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
         animator.Play("Death");
         enabled = false;
     }
     public void EndDeath()
     {
-        Debug.Log("Jump to Death Ending Screen");
+        SceneManager.LoadScene(SceneSwap.LoseScene);
     }
 
 }
