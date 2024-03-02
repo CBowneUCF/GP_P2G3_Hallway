@@ -200,7 +200,7 @@ MonoBehaviour:
   maxStamina: 100
   staminaDrain: 30
   camera: {fileID: 8426160403107293032}
-  audio: {fileID: 0}
+  audio: {fileID: 7860279726507153236}
   transform: {fileID: 0}
   rb: {fileID: 0}
   collider: {fileID: 0}
