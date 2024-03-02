@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using static UnityEditor.PlayerSettings;
 
 public class PlayerScript : MonoBehaviour
 {
@@ -32,6 +33,7 @@ public class PlayerScript : MonoBehaviour
 
     //References
     public new Transform camera;
+    public new AudioCallerScript audio;
 
     //Data Stache
     [HideInInspector] public new Transform transform;
@@ -64,9 +66,12 @@ public class PlayerScript : MonoBehaviour
         animator = GetComponent<Animator>();
 
         Cursor.lockState = CursorLockMode.Locked;
+        Mouse.current.WarpCursorPosition(new Vector2(0.5f, 0.5f));
         Cursor.visible = false;
 
         playerStamina = maxStamina;
+
+
     }
 
     void Update()
@@ -74,6 +79,8 @@ public class PlayerScript : MonoBehaviour
         //onGround = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f, Ground);
         //if (onGround) rb.drag = groundDrag;
         //else rb.drag = 0;
+
+
 
         OtherControls();
 
@@ -215,7 +222,15 @@ public class PlayerScript : MonoBehaviour
         {
             Debug.Log("Interacted with Something.");
             results[0].GetComponent<InteractableScript>()?.Interact(this);
-            if (results[0].GetComponent<PageItemScript>()) canMove = !canMove;
+            if (results[0].GetComponent<PageItemScript>())
+            {
+                canMove = !canMove;
+                audio.PlaySoundOneShot(3);
+            }
+            if (results[0].GetComponent<KeycardItemScript>())
+            {
+                audio.PlaySoundOneShot(2);
+            }
         }
     }
 
