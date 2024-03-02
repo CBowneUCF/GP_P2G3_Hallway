@@ -9,7 +9,7 @@ public abstract class InteractableScript : MonoBehaviour
 
 
 
-    public abstract void Interact();
+    public abstract void Interact(MonoBehaviour interactor = null);
 
 
 }

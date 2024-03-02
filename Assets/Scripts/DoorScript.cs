@@ -17,6 +17,10 @@ public class DoorScript : InteractableScript
     public string anim_Closing = "Closing";
     public string anim_Opening = "Opening";
 
+    public bool requiresKeycard;
+    public new AudioCallerScript audio;
+    PlayerScript player;
+
     private void Start()
     {
         //collider = GetComponent<Collider>();
@@ -25,16 +29,25 @@ public class DoorScript : InteractableScript
         //obstacle.enabled = isClosed;
         animator = GetComponent<Animator>();
         animator.Play(isClosed ? anim_Closed : anim_Open );
+        if (requiresKeycard) player = GameStateManagerScript.instance.player;
+        audio = GetComponent<AudioCallerScript>();
     }
 
 
-    public override void Interact()
+    public override void Interact(MonoBehaviour interactor = null)
     {
+        if (requiresKeycard) if (!player.hasKeycard || interactor.GetType() == typeof(StatueEnemyScript))
+            {
+                audio.PlaySoundOneShot(1);
+                return;
+            }
+
         if (isAnimating) return;
 
         animator.Play(isClosed ? anim_Opening : anim_Closing);
         isAnimating = true;
         isClosed = !isClosed;
+        audio.PlaySoundOneShot(0);
 
     }
 

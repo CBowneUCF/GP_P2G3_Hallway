@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameStateManagerScript : Singleton<GameStateManagerScript>
 {
@@ -8,6 +10,7 @@ public class GameStateManagerScript : Singleton<GameStateManagerScript>
     public StatueEnemyScript enemy;
     public GameObject pauseMenuObject;
     private InputControls input;
+    public Slider staminaSlider;
 
     bool isPaused;
     Animator[] animators;
@@ -21,6 +24,7 @@ public class GameStateManagerScript : Singleton<GameStateManagerScript>
     private void Update()
     {
         if(isPaused && input.Main.Pause.WasPressedThisFrame()) TogglePause();
+        staminaSlider.value = player.playerStamina / player.maxStamina;
     }
 
 
@@ -41,6 +45,11 @@ public class GameStateManagerScript : Singleton<GameStateManagerScript>
         Cursor.visible = isPaused;
         Cursor.lockState = isPaused ? CursorLockMode.None : CursorLockMode.Locked;
 
+    }
+
+    public void QuitToMenu()
+    {
+        SceneManager.LoadScene(SceneSwap.MainMenuScene);
     }
 
 }

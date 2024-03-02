@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
+using static UnityEditor.PlayerSettings;
 
 public class PlayerScript : MonoBehaviour
 {
@@ -30,13 +32,13 @@ public class PlayerScript : MonoBehaviour
     private Coroutine regeneratingStamina;
 
     //References
-    public new Camera camera;
+    public new Transform camera;
+    public new AudioCallerScript audio;
 
     //Data Stache
     [HideInInspector] public new Transform transform;
     [HideInInspector] public Rigidbody rb;
     [HideInInspector] public new Collider collider;
-    [HideInInspector] public Transform camTransform;
     private InputControls input;
     GameStateManagerScript stateManager;
     bool onGround;
@@ -45,10 +47,9 @@ public class PlayerScript : MonoBehaviour
     Vector2 viewInput;
     //bool mouseActive = true;
 
+    [HideInInspector] public bool hasKeycard;
 
-
-
-
+    [HideInInspector] public bool canMove = true;
 
 
 
@@ -61,13 +62,16 @@ public class PlayerScript : MonoBehaviour
         transform = base.transform;
         rb = GetComponent<Rigidbody>();
         collider= GetComponent<Collider>();
-        camTransform = camera.transform;
         stateManager = GameStateManagerScript.instance;
+        animator = GetComponent<Animator>();
 
         Cursor.lockState = CursorLockMode.Locked;
+        Mouse.current.WarpCursorPosition(new Vector2(0.5f, 0.5f));
         Cursor.visible = false;
 
         playerStamina = maxStamina;
+
+
     }
 
     void Update()
@@ -76,13 +80,18 @@ public class PlayerScript : MonoBehaviour
         //if (onGround) rb.drag = groundDrag;
         //else rb.drag = 0;
 
+
+
         OtherControls();
 
         Sprint();
 
-        inputDirection = input.Main.Movement.ReadValue<Vector2>();
+        if (canMove)
+        {
+            inputDirection = input.Main.Movement.ReadValue<Vector2>();
 
-        LookControls();
+            LookControls();
+        }
 
         if (interactPressed) InteractAction();
 
@@ -99,6 +108,8 @@ public class PlayerScript : MonoBehaviour
         //if (rb.velocity.magnitude >= moveTopSpeed) rb.velocity = rb.velocity.normalized * moveTopSpeed;
 
         rb.velocity = rotatedDirection * currentSpeed; //My Second Solution (Little to no Easing.)
+
+        animator.SetFloat("WalkSpeed", new Vector3(rb.velocity.x, 0, rb.velocity.z).magnitude);
     }
 
     void LookControls()
@@ -116,7 +127,7 @@ public class PlayerScript : MonoBehaviour
         viewRotation.y = Mathf.Clamp(viewRotation.y, -90f, 90f);
 
         transform.eulerAngles = Vector3.up * viewRotation.x;
-        camTransform.eulerAngles = transform.eulerAngles + Vector3.right * viewRotation.y;
+        camera.eulerAngles = transform.eulerAngles + Vector3.right * viewRotation.y;
     }
 
     private void CapSpeed()
@@ -206,8 +217,21 @@ public class PlayerScript : MonoBehaviour
 
     void InteractAction()
     {
-        Collider[] results = Physics.OverlapBox(camTransform.position + (camTransform.forward * (interactSize.z/2)), interactSize/2, camTransform.rotation, interactableMask);
-        if(results.Length > 0) results[0].GetComponent<InteractableScript>()?.Interact();
+        Collider[] results = Physics.OverlapBox(camera.position + (camera.forward * (interactSize.z/2)), interactSize/2, camera.rotation, interactableMask);
+        if(results.Length > 0)
+        {
+            Debug.Log("Interacted with Something.");
+            results[0].GetComponent<InteractableScript>()?.Interact(this);
+            if (results[0].GetComponent<PageItemScript>())
+            {
+                canMove = !canMove;
+                audio.PlaySoundOneShot(3);
+            }
+            if (results[0].GetComponent<KeycardItemScript>())
+            {
+                audio.PlaySoundOneShot(2);
+            }
+        }
     }
 
 
@@ -234,6 +258,20 @@ public class PlayerScript : MonoBehaviour
     public void SetPause(bool value)
     {
 
+    }
+
+    Animator animator;
+
+    public void BeginDeath()
+    {
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
+        animator.Play("Death");
+        enabled = false;
+    }
+    public void EndDeath()
+    {
+        SceneManager.LoadScene(SceneSwap.LoseScene);
     }
 
 }

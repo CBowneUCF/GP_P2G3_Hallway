@@ -4,28 +4,17 @@ using UnityEngine;
 
 public class KeycardItemScript : InteractableScript
 {
-    public float speed;
-    public Transform player;
+    public float spinSpeed;
+    PlayerScript player;
 
-    new Transform transform;
-    Vector3 deSpawnLocation;
-
-    //SceneSwap changeScene;
     
-    private void Start()
-    {
-        transform = GetComponent<Transform>();
-        deSpawnLocation = player.position;
-    }
+    private void Start() => player = GameStateManagerScript.instance.player;
 
-    private void Update()
-    {
-        transform.eulerAngles += Vector3.up * speed;
-    }
+    private void Update() => transform.eulerAngles += Vector3.up * spinSpeed;
 
-    public override void Interact()
+    public override void Interact(MonoBehaviour interactor = null)
     {
-        player.position = deSpawnLocation;
-        //changeScene.WinScreen();
+        player.hasKeycard = true;
+        Destroy(gameObject);
     }
 }

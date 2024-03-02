@@ -17,33 +17,43 @@ public class StatueEnemyScript : MonoBehaviour
     public float sightPadding;
     public float interactionReach;
     public float doorOpenTime;
-    
+
     //Components
+    GameStateManagerScript stateManager;
     NavMeshAgent agent;
     new Transform transform;
     private new Renderer renderer;
     Transform rendererTransform;
     Transform camTransform;
+    new AudioSource audio;
+    float audioVolume;
 
-    public Transform player;
-    public Camera playerCamera;
+    Transform player;
+    Camera camCamera;
     public BoxCollider renderBounds;
 
     //Other Data
     public enum EnemyState { Moving, Visible, Halted, Paused }
     public EnemyState enemyState;
     bool canMove => enemyState == EnemyState.Moving;
+    
 
     float doorTimeLeft = 0;
     DoorScript openingDoor;
 
+
     private void Start()
     {
+        stateManager = GameStateManagerScript.instance;
         agent = GetComponent<NavMeshAgent>();
         transform = base.transform;
         renderer = GetComponentInChildren<Renderer>();
         rendererTransform = renderBounds.transform;
-        camTransform = playerCamera.transform;
+        player = stateManager.player.GetComponent<Transform>();
+        camTransform = stateManager.player.camera;
+        camCamera = camTransform.GetComponentInChildren<Camera>();
+        audio = GetComponent<AudioSource>();
+        audioVolume = audio.volume;
     }
 
 
@@ -68,7 +78,7 @@ public class StatueEnemyScript : MonoBehaviour
             doorTimeLeft -= Time.deltaTime;
             if(doorTimeLeft <= 0.4)
             {
-                openingDoor?.Interact();
+                openingDoor?.Interact(this);
                 openingDoor = null;
             }
             if(doorTimeLeft <= 0)
@@ -99,11 +109,12 @@ public class StatueEnemyScript : MonoBehaviour
             agent.velocity = Vector3.zero;
             agent.destination = agent.nextPosition;
         }
+        audio.volume = value == EnemyState.Moving ? audioVolume : 0;
     }
 
 
     //Frustrum Check Code from https://youtu.be/_e57zSZSOS8
-    bool IsPlayerLooking() => GeometryUtility.TestPlanesAABB(GeometryUtility.CalculateFrustumPlanes(playerCamera), renderer.bounds);    
+    bool IsPlayerLooking() => GeometryUtility.TestPlanesAABB(GeometryUtility.CalculateFrustumPlanes(camCamera), renderer.bounds);    
 
     bool IsSightBlockedV3()
     {
@@ -129,14 +140,14 @@ public class StatueEnemyScript : MonoBehaviour
 
     bool SeeRay(Position end)
     {
-        Vector3 withinCam = playerCamera.WorldToViewportPoint(end);
+        Vector3 withinCam = camCamera.WorldToViewportPoint(end);
         if (!(withinCam.z > 0 && withinCam.x < 1 && withinCam.x > 0 && withinCam.y < 1 && withinCam.y > 0)) return false;
 
         RaycastHit hit;
-        Physics.Linecast(playerCamera.transform.position, end, out hit, sightLayerMask, QueryTriggerInteraction.Ignore);
+        Physics.Linecast(camCamera.transform.position, end, out hit, sightLayerMask, QueryTriggerInteraction.Ignore);
         bool result = hit.collider == null || hit.point == end;
 
-        Debug.DrawLine(playerCamera.transform.position, end, result ? Color.white : Color.red);
+        Debug.DrawLine(camCamera.transform.position, end, result ? Color.white : Color.red);
         return result;
 
     }
@@ -158,7 +169,7 @@ public class StatueEnemyScript : MonoBehaviour
     void KillPlayer()
     {
         ChangeMovementCapability(EnemyState.Halted);
-        Debug.Log("SNAP");
+        GameStateManagerScript.instance.player.BeginDeath();
     }
 
     void BeginDoorOpening()
