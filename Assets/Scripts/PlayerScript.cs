@@ -4,16 +4,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class PlayerScript : MonoBehaviour
 {
 
     //Parameters
-    //public float moveAccel;
-    private float currentSpeed;
+    [SerializeField] private float currentSpeed;
     public float walkTopSpeed = 7;
     public float sprintTopSpeed = 14;
-    //public float groundDrag;
     public float playerHeight;
     public LayerMask groundMask;
     public LayerMask interactableMask;
@@ -25,30 +24,30 @@ public class PlayerScript : MonoBehaviour
     public float maxStamina = 100f; 
     public float staminaDrain;
     bool canSprint;
+    bool isMoving;
     private float timeBeforeRegen  = 3;
     private float staminaIncrement = 2;
     private float staminaTimeIncrement = 0.1f;
     private Coroutine regeneratingStamina;
 
     //References
-    public new Camera camera;
+    public new Transform camera;
 
     //Data Stache
     [HideInInspector] public new Transform transform;
     [HideInInspector] public Rigidbody rb;
     [HideInInspector] public new Collider collider;
-    [HideInInspector] public Transform camTransform;
     private InputControls input;
+    GameStateManagerScript stateManager;
     bool onGround;
     Vector2 inputDirection;
     Vector2 viewRotation;
     Vector2 viewInput;
-    bool mouseActive = true;
+    //bool mouseActive = true;
 
+    [HideInInspector] public bool hasKeycard;
 
-
-
-
+    [HideInInspector] public bool canMove = true;
 
 
 
@@ -61,14 +60,11 @@ public class PlayerScript : MonoBehaviour
         transform = base.transform;
         rb = GetComponent<Rigidbody>();
         collider= GetComponent<Collider>();
-        camTransform = camera.transform;
+        stateManager = GameStateManagerScript.instance;
+        animator = GetComponent<Animator>();
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-
-        // Set speed amounts for sprint and walk
-        //walkTopSpeed = 7;
-        //sprintTopSpeed = 14;
 
         playerStamina = maxStamina;
     }
@@ -83,13 +79,17 @@ public class PlayerScript : MonoBehaviour
 
         Sprint();
 
-        inputDirection = input.Main.Movement.ReadValue<Vector2>();
+        if (canMove)
+        {
+            inputDirection = input.Main.Movement.ReadValue<Vector2>();
 
-        LookControls();
+            LookControls();
+        }
 
         if (interactPressed) InteractAction();
 
-        if (Input.GetKeyDown(KeyCode.Escape)) Application.Quit();
+        if(pausePressed) stateManager.TogglePause();
+        //if (Input.GetKeyDown(KeyCode.Escape)) Application.Quit();
     }
     private void FixedUpdate()
     {
@@ -101,32 +101,26 @@ public class PlayerScript : MonoBehaviour
         //if (rb.velocity.magnitude >= moveTopSpeed) rb.velocity = rb.velocity.normalized * moveTopSpeed;
 
         rb.velocity = rotatedDirection * currentSpeed; //My Second Solution (Little to no Easing.)
+
+        animator.SetFloat("WalkSpeed", new Vector3(rb.velocity.x, 0, rb.velocity.z).magnitude);
     }
 
     void LookControls()
     {
         viewInput = input.Main.Looking.ReadValue<Vector2>();
-        Vector2 viewInputAdj = viewInput * Time.deltaTime * mouseSensitivity;
+        Vector2 viewInputAdj = viewInput * mouseSensitivity * Time.deltaTime * (Screen.width/100f);
 
         //Debug Function for Deactivating mouse movement when not needed.
-        if (Input.GetKeyDown(KeyCode.L))
-        {
-            mouseActive = !mouseActive;
-            Cursor.visible = !mouseActive;
-            Cursor.lockState = mouseActive ? CursorLockMode.Locked : CursorLockMode.None;
-        }
 
-        if (mouseActive)
-        {
-            viewRotation.x += viewInputAdj.x;
-            viewRotation.y -= viewInputAdj.y;
-        }
+        viewRotation.x += viewInputAdj.x;
+        viewRotation.y -= viewInputAdj.y;
+        
 
         // Make it so you can't look up/down > 90 degrees
         viewRotation.y = Mathf.Clamp(viewRotation.y, -90f, 90f);
 
         transform.eulerAngles = Vector3.up * viewRotation.x;
-        camTransform.eulerAngles = transform.eulerAngles + Vector3.right * viewRotation.y;
+        camera.eulerAngles = transform.eulerAngles + Vector3.right * viewRotation.y;
     }
 
     private void CapSpeed()
@@ -143,8 +137,20 @@ public class PlayerScript : MonoBehaviour
 
     private void Sprint()
     {   
+        // Check if the player is moving
+        if (inputDirection.x != 0 || inputDirection.y != 0)
+        {
+            isMoving = true;
+        }
+        else
+        {
+            isMoving = false;
+        }
+
+
         if(playerStamina > 0)
             canSprint = true;
+        
         
         if (sprintHeld && canSprint)
         {
@@ -157,18 +163,18 @@ public class PlayerScript : MonoBehaviour
                 }
 
                 currentSpeed = sprintTopSpeed;
-                playerStamina -= staminaDrain * Time.deltaTime;
-            }    
 
-            if(!canSprint)
-            {
-                currentSpeed = walkTopSpeed;
-            }
+                if (isMoving)
+                {
+                    playerStamina -= staminaDrain * Time.deltaTime; 
+                }
+            }    
 
             if (playerStamina < 0)
                 playerStamina = 0;
         }
         else { currentSpeed = walkTopSpeed; }
+        
 
         if (playerStamina == 0)
             canSprint = false; 
@@ -204,8 +210,13 @@ public class PlayerScript : MonoBehaviour
 
     void InteractAction()
     {
-        Collider[] results = Physics.OverlapBox(camTransform.position + (camTransform.forward * (interactSize.z/2)), interactSize/2, camTransform.rotation, interactableMask);
-        if(results.Length > 0) results[0].GetComponent<InteractableScript>()?.Interact();
+        Collider[] results = Physics.OverlapBox(camera.position + (camera.forward * (interactSize.z/2)), interactSize/2, camera.rotation, interactableMask);
+        if(results.Length > 0)
+        {
+            Debug.Log("Interacted with Something.");
+            results[0].GetComponent<InteractableScript>()?.Interact(this);
+            if (results[0].GetComponent<PageItemScript>()) canMove = !canMove;
+        }
     }
 
 
@@ -227,5 +238,25 @@ public class PlayerScript : MonoBehaviour
     bool blinkPressed;
     bool pausePressed;
     bool interactPressed;
+
+
+    public void SetPause(bool value)
+    {
+
+    }
+
+    Animator animator;
+
+    public void BeginDeath()
+    {
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
+        animator.Play("Death");
+        enabled = false;
+    }
+    public void EndDeath()
+    {
+        SceneManager.LoadScene(SceneSwap.LoseScene);
+    }
 
 }
