@@ -75,7 +75,7 @@ MonoBehaviour:
   attackRadius: 3
   sightLayerMask:
     serializedVersion: 2
-    m_Bits: 321
+    m_Bits: 65
   interactionLayerMask:
     serializedVersion: 2
     m_Bits: 217
