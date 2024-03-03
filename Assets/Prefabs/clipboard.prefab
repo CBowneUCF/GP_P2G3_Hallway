@@ -66,7 +66,7 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: ef0bdcef9e4e1a4429533aa7a7e56d06,
         type: 3}
       propertyPath: m_Name
-      value: clipboard Variant
+      value: clipboard
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
