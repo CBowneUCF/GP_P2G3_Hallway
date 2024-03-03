@@ -11,7 +11,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: ef0bdcef9e4e1a4429533aa7a7e56d06,
         type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: ef0bdcef9e4e1a4429533aa7a7e56d06,
         type: 3}
@@ -66,8 +66,13 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: ef0bdcef9e4e1a4429533aa7a7e56d06,
         type: 3}
       propertyPath: m_Name
-      value: clipboard Variant
+      value: clipboard
       objectReference: {fileID: 0}
+    - target: {fileID: 2929640277652407947, guid: ef0bdcef9e4e1a4429533aa7a7e56d06,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 0c76c55325fa1d94189c6d4d0727330a, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
