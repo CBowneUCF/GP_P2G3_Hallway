@@ -95,7 +95,7 @@ GameObject:
   - component: {fileID: 4698553892657201726}
   - component: {fileID: 231295033141577356}
   - component: {fileID: 7783158482035200871}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SCPPage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
