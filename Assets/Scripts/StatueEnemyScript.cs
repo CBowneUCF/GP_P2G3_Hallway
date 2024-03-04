@@ -73,7 +73,7 @@ public class StatueEnemyScript : MonoBehaviour
 
         if(canMove) ForwardInteraction();
 
-        if (doorTimeLeft > 0)
+        if (doorTimeLeft > 0 && enemyState == EnemyState.Halted)
         {
             doorTimeLeft -= Time.deltaTime;
             if(doorTimeLeft <= 0.4)
