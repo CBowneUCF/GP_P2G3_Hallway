@@ -115,7 +115,8 @@ public class PlayerScript : MonoBehaviour
     void LookControls()
     {
         viewInput = input.Main.Looking.ReadValue<Vector2>();
-        Vector2 viewInputAdj = viewInput * mouseSensitivity * Time.deltaTime;
+        Vector2 viewInputAdj = viewInput * mouseSensitivity / (Screen.width/10);
+
 
         //Debug Function for Deactivating mouse movement when not needed.
 
